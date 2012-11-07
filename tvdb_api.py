@@ -307,6 +307,7 @@ class Tvdb:
                 language = None,
                 search_all_languages = False,
                 apikey = None,
+                base_url = "http://www.thetvdb.com",
                 forceConnect=False,
                 useZip=False):
 
@@ -369,6 +370,9 @@ class Tvdb:
             own key if desired - this is recommended if you are embedding
             tvdb_api in a larger application)
             See http://thetvdb.com/?tab=apiregister to get your own key
+
+        base_url (str):
+            Override the default thetvdb.com server url.
 
         forceConnect (bool):
             If true it will always try to connect to theTVDB.com even if we
@@ -477,7 +481,7 @@ class Tvdb:
 
         # The following url_ configs are based of the
         # http://thetvdb.com/wiki/index.php/Programmers_API
-        self.config['base_url'] = "http://www.thetvdb.com"
+        self.config['base_url'] = base_url
 
         if self.config['search_all_languages']:
             self.config['url_getSeries'] = u"%(base_url)s/api/GetSeries.php?seriesname=%%s&language=all" % self.config
