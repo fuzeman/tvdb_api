@@ -29,7 +29,6 @@ if IS_PY2:
     from tvdb_cache import CacheHandler
     from urllib import quote as url_quote
 else:
-    import requests
     from urllib.parse import quote as url_quote
 import getpass
 import tempfile
@@ -319,7 +318,8 @@ class Tvdb:
                 base_url = "http://www.thetvdb.com",
                 forceConnect=False,
                 useZip=False,
-                dvdorder=False):
+                dvdorder=False,
+                use_requests=False):
 
         """interactive (True/False):
             When True, uses built-in console UI is used to select the correct show.
@@ -433,8 +433,12 @@ class Tvdb:
 
         self.config['dvdorder'] = dvdorder
 
-        if not IS_PY2: # FIXME: Allow using requests in Python 2?
+        self.config['use_requests'] = use_requests
+
+        if not IS_PY2 or self.config['use_requests']:
+            import requests
             import requests_cache
+
             if cache is True:
                 self.session = requests_cache.CachedSession(
                     expire_after=21600, # 6 hours
@@ -558,7 +562,7 @@ class Tvdb:
         return os.path.join(tempfile.gettempdir(), "tvdb_api-%s" % (uid))
 
     def _loadUrl(self, url, recache = False, language=None):
-        if not IS_PY2:
+        if not IS_PY2 or self.config['use_requests']:
             # Python 3: return content at URL as bytes
             resp = self.session.get(url)
             if 'application/zip' in resp.headers.get("Content-Type", ''):
