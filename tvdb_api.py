@@ -51,9 +51,15 @@ except ImportError:
 if IS_PY2:
     int_types = (int, long)
     text_type = unicode
+
+    def u(s):
+        return unicode(s.replace(r'\\', r'\\\\'), "unicode_escape")
 else:
     int_types = int
     text_type = str
+
+    def u(s):
+        return s
 
 
 from tvdb_ui import BaseUI, ConsoleUI
@@ -97,7 +103,7 @@ class Show(dict):
 
     def __repr__(self):
         return "<Show %r (containing %s seasons)>" % (
-            self.data.get(u'seriesname', 'instance'),
+            self.data.get(u('seriesname'), 'instance'),
             len(self)
         )
 
@@ -230,9 +236,9 @@ class Episode(dict):
         self.season = season
 
     def __repr__(self):
-        seasno = int(self.get(u'seasonnumber', 0))
-        epno = int(self.get(u'episodenumber', 0))
-        epname = self.get(u'episodename')
+        seasno = int(self.get(u('seasonnumber'), 0))
+        epno = int(self.get(u('episodenumber'), 0))
+        epname = self.get(u('episodename'))
         if epname is not None:
             return "<Episode %02dx%02d - %r>" % (seasno, epno, epname)
         else:
@@ -533,18 +539,18 @@ class Tvdb:
         self.config['base_url'] = base_url
 
         if self.config['search_all_languages']:
-            self.config['url_getSeries'] = u"%(base_url)s/api/GetSeries.php?seriesname=%%s&language=all" % self.config
+            self.config['url_getSeries'] = u("%(base_url)s/api/GetSeries.php?seriesname=%%s&language=all") % self.config
         else:
-            self.config['url_getSeries'] = u"%(base_url)s/api/GetSeries.php?seriesname=%%s&language=%(language)s" % self.config
+            self.config['url_getSeries'] = u("%(base_url)s/api/GetSeries.php?seriesname=%%s&language=%(language)s") % self.config
 
-        self.config['url_epInfo'] = u"%(base_url)s/api/%(apikey)s/series/%%s/all/%%s.xml" % self.config
-        self.config['url_epInfo_zip'] = u"%(base_url)s/api/%(apikey)s/series/%%s/all/%%s.zip" % self.config
+        self.config['url_epInfo'] = u("%(base_url)s/api/%(apikey)s/series/%%s/all/%%s.xml") % self.config
+        self.config['url_epInfo_zip'] = u("%(base_url)s/api/%(apikey)s/series/%%s/all/%%s.zip") % self.config
 
-        self.config['url_seriesInfo'] = u"%(base_url)s/api/%(apikey)s/series/%%s/%%s.xml" % self.config
-        self.config['url_actorsInfo'] = u"%(base_url)s/api/%(apikey)s/series/%%s/actors.xml" % self.config
+        self.config['url_seriesInfo'] = u("%(base_url)s/api/%(apikey)s/series/%%s/%%s.xml") % self.config
+        self.config['url_actorsInfo'] = u("%(base_url)s/api/%(apikey)s/series/%%s/actors.xml") % self.config
 
-        self.config['url_seriesBanner'] = u"%(base_url)s/api/%(apikey)s/series/%%s/banners.xml" % self.config
-        self.config['url_artworkPrefix'] = u"%(base_url)s/banners/%%s" % self.config
+        self.config['url_seriesBanner'] = u("%(base_url)s/api/%(apikey)s/series/%%s/banners.xml") % self.config
+        self.config['url_artworkPrefix'] = u("%(base_url)s/banners/%%s") % self.config
 
     def _getTempDir(self):
         """Returns the [system temp dir]/tvdb_api-u501 (or
@@ -694,7 +700,7 @@ class Tvdb:
         - Replaces &amp; with &
         - Trailing whitespace
         """
-        data = data.replace(u"&amp;", u"&")
+        data = data.replace(u("&amp;"), u("&"))
         data = data.strip()
         return data
 
