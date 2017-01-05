@@ -49,12 +49,14 @@ except ImportError:
 
 
 if IS_PY2:
+    string_types = basestring,
     int_types = (int, long)
     text_type = unicode
 
     def u(s):
         return unicode(s.replace(r'\\', r'\\\\'), "unicode_escape")
 else:
+    string_types = str,
     int_types = int
     text_type = str
 
@@ -455,7 +457,7 @@ class Tvdb:
             elif cache is False:
                 self.session = requests.Session()
                 self.config['cache_enabled'] = False
-            elif isinstance(cache, text_type):
+            elif isinstance(cache, string_types):
                 # Specified cache path
                 self.session = requests_cache.CachedSession(
                     expire_after=21600, # 6 hours
